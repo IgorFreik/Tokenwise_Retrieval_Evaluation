@@ -9,9 +9,9 @@ from plots import create_heatmap_visualizations, create_execution_time_plot
 
 
 PARAMETER_GRID = {
-    'chunk_size': [25, 50, 100, 200, 300, 400, 800],
+    'chunk_sizes': [25, 50, 100, 200, 300, 400, 800],
     'num_retrived_chunks': [1, 3, 5, 7, 10],
-    'overlap_size': [0]
+    'overlap_sizes': [0]
 }
 
 
@@ -31,8 +31,8 @@ def load_corpus(corpus_path: str = "data/chatlogs.md") -> List[Dict]:
 
 def run_hyperparameter_grid_search(search_grid: dict[str, list[int]]):
     chunk_sizes = search_grid["chunk_sizes"]
-    retrieval_counts = search_grid["retrieval_counts"]
-    overlap_size = search_grid["overlap_size"][0]
+    retrieval_counts = search_grid["num_retrived_chunks"]
+    overlap_size = search_grid["overlap_sizes"][0]
 
     # load data
     corpus = load_corpus()
@@ -86,7 +86,7 @@ def run_hyperparameter_grid_search(search_grid: dict[str, list[int]]):
     pbar.close()
 
     # save results to csv
-    results_df = pd.dataframe(results)
+    results_df = pd.DataFrame(results)
     csv_path = os.path.join(results_dir, f"hyperparameter_results_token_wise.csv")
     results_df.to_csv(csv_path, index=False)
     print(f"token-wise evaluation results saved to {csv_path}")
