@@ -42,7 +42,7 @@ def run_hyperparameter_grid_search(search_grid: dict[str, list[int]]):
     ground_truth = df_queries["references"].tolist()
     ground_truth = [eval(gt) for gt in ground_truth]
 
-    timestamp = datetime.now().strftime("%y%m%d_%h%m%s")
+    timestamp = datetime.now().strftime("%y%m%d_%H%M%S")
     results_dir = f"./results/results_{timestamp}"
     os.makedirs(results_dir, exist_ok=True)
 
