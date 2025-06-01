@@ -148,8 +148,12 @@ class RAGRetrievalEvaluator:
         """
         query_embedding = self._generate_embeddings([query])
 
+        # Normalize embeddings for cosine similarity
+        query_norm = query_embedding / np.linalg.norm(query_embedding, axis=1, keepdims=True)
+        chunk_norms = self.chunk_embeddings / np.linalg.norm(self.chunk_embeddings, axis=1, keepdims=True)
+
         # Compute cosine similarity
-        similarities = np.dot(query_embedding, self.chunk_embeddings.T).flatten()
+        similarities = np.dot(query_norm, chunk_norms.T).flatten()
 
         # Get indices of top k chunks
         top_k_indices = np.argsort(similarities)[-num_retrieved_chunks:][::-1]
@@ -238,9 +242,12 @@ class RAGRetrievalEvaluator:
         total_precision = 0.0
         total_recall = 0.0
         total_iou = 0.0
-
+        ground_truth_toks = []
         # Loop through each query and its ground truth
         for query_idx, (query, gt_items) in enumerate(zip(queries, parsed_ground_truth)):
+            if gt_items == []:
+                continue
+
             remapped_gt = gt_items
 
             # Retrieve chunks for the query
@@ -260,6 +267,8 @@ class RAGRetrievalEvaluator:
 
             # Calculate union
             union = retrieved_tokens.union(ground_truth_tokens)
+            # print(f"Length of ground_truth_tokens: {len(ground_truth_tokens)}")
+            ground_truth_toks.append(len(ground_truth_tokens))
 
             # Calculate precision and recall
             precision = len(intersection) / len(retrieved_tokens) if retrieved_tokens else 0.0
@@ -271,6 +280,9 @@ class RAGRetrievalEvaluator:
             total_precision += precision
             total_recall += recall
             total_iou += iou
+
+        avg_gr_t = sum(ground_truth_toks) / len(ground_truth_toks)
+        print(f"Average ground truth toks: {avg_gr_t}")
 
         # Calculate average precision, recall, and IoU
         avg_precision = total_precision / len(queries) if queries else 0.0
