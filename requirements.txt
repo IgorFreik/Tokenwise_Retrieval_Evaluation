@@ -1,6 +1,15 @@
+# Core dependencies
 transformers==4.50.2
 git+https://github.com/brandonstarxel/chunking_evaluation.git
 torch==2.2.2
 pandas==2.2.3
 numpy==1.26.4
 matplotlib==3.9.4
+
+# Development dependencies
+black==24.2.0
+flake8==7.0.0
+mypy==1.8.0
+pytest==8.0.0
+pytest-cov==4.1.0
+isort==5.13.2
